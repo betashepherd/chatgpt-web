@@ -6,10 +6,17 @@ import (
 	"chatgpt-web/pkg/model"
 	"chatgpt-web/pkg/model/user"
 	"gorm.io/gorm"
+	"os"
 )
 
 // SetupDB 启动数据库
 func SetupDB() {
+	// create db file dir
+	dir := "data"
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0777)
+	}
+
 	//建立连接池
 	db := model.ConnectDB()
 
