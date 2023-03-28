@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/869413421/chatgpt-web/pkg/logger"
+	"chatgpt-web/pkg/logger"
 )
 
 // Configuration 项目配置

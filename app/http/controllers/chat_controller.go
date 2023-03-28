@@ -10,10 +10,10 @@ import (
 
 	"golang.org/x/net/proxy"
 
-	"github.com/869413421/chatgpt-web/config"
-	"github.com/869413421/chatgpt-web/pkg/logger"
+	"chatgpt-web/config"
+	"chatgpt-web/pkg/logger"
 	"github.com/gin-gonic/gin"
-	gogpt "github.com/sashabaranov/go-gpt3"
+	gogpt "github.com/sashabaranov/go-openai"
 )
 
 // ChatController 首页控制器

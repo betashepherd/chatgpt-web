@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/869413421/chatgpt-web/pkg/logger"
+	"chatgpt-web/pkg/logger"
 )
 
 // Hash 进行加密

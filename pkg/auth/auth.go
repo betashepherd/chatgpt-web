@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"chatgpt-web/pkg/model/user"
 	"errors"
-	"github.com/869413421/chatgpt-web/pkg/model/user"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"strings"
 	"time"
 )
@@ -15,7 +15,7 @@ var (
 
 type CustomClaims struct {
 	User *user.User
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 // Decode a token string into a token object
@@ -40,13 +40,13 @@ func Decode(tokenString string) (*CustomClaims, error) {
 // Encode a claim into a JWT
 func Encode(user *user.User) (string, error) {
 
-	expireToken := time.Now().Add(time.Hour * 72).Unix()
+	expireToken := time.Now().Add(time.Hour * 72)
 
 	// Create the Claims
 	claims := CustomClaims{
 		user,
-		jwt.StandardClaims{
-			ExpiresAt: expireToken,
+		jwt.RegisteredClaims{
+			ExpiresAt: &jwt.NumericDate{expireToken},
 			Issuer:    "chatgpt-web",
 		},
 	}

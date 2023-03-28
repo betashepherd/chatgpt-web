@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/869413421/chatgpt-web/pkg/password"
+	"chatgpt-web/pkg/password"
 	"gorm.io/gorm"
 )
 

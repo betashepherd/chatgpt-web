@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 	gloger "gorm.io/gorm/logger"
 
-	"github.com/869413421/chatgpt-web/pkg/logger"
-	"github.com/869413421/chatgpt-web/pkg/types"
+	"chatgpt-web/pkg/logger"
+	"chatgpt-web/pkg/types"
 )
 
 // BaseModel 主模型

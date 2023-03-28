@@ -1,10 +1,10 @@
 package bootstrap
 
 import (
-	"github.com/869413421/chatgpt-web/config"
-	"github.com/869413421/chatgpt-web/pkg/logger"
-	"github.com/869413421/chatgpt-web/pkg/model"
-	"github.com/869413421/chatgpt-web/pkg/model/user"
+	"chatgpt-web/config"
+	"chatgpt-web/pkg/logger"
+	"chatgpt-web/pkg/model"
+	"chatgpt-web/pkg/model/user"
 	"gorm.io/gorm"
 )
 

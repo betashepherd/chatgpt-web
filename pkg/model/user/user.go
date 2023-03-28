@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/869413421/chatgpt-web/pkg/model"
-	"github.com/869413421/chatgpt-web/pkg/password"
+	"chatgpt-web/pkg/model"
+	"chatgpt-web/pkg/password"
 )
 
 type User struct {

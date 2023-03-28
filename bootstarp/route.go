@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/869413421/chatgpt-web/routes"
+	"chatgpt-web/routes"
 	"github.com/gin-gonic/gin"
 	"sync"
 )

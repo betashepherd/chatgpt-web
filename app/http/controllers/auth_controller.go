@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"github.com/869413421/chatgpt-web/pkg/auth"
-	"github.com/869413421/chatgpt-web/pkg/model/user"
+	"chatgpt-web/pkg/auth"
+	"chatgpt-web/pkg/model/user"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"

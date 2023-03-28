@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/869413421/chatgpt-web/pkg/model"
+	"chatgpt-web/pkg/model"
 )
 
 // GetByName 根据名称获取用户
