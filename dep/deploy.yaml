@@ -97,7 +97,7 @@ spec:
       volumes:
         - name: data-vol
           hostPath:
-            path: /data/apps
+            path: /data
         - name: config-vol
           configMap:
             name: chatgpt-web-cm
@@ -105,3 +105,35 @@ spec:
               - key: config.json
                 path: config.json
 
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: chatgpt-web
+  name: chatgpt-web-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+    - secretName: chatgpt-web-tls
+      hosts:
+        - ai.bgton.cn
+  rules:
+    - host: ai.bgton.cn
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chatgpt-web
+                port:
+                  number: 8080
