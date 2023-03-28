@@ -31,7 +31,7 @@ func (model BaseModel) CreatedAtDate() string {
 var DB *gorm.DB
 
 func ConnectDB() *gorm.DB {
-	dsn := "chat.db"
+	dsn := "data/chat.db"
 	var err error
 	DB, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{
 		Logger: gloger.Default.LogMode(gloger.Info),
