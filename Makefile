@@ -1,3 +1,4 @@
+NAMESPACE := apps
 MAIN_PKG := chatgpt-web
 DOCKER_HUB := ccr.ccs.tencentyun.com/fastapp
 GIT_TAG := $(shell git describe --abbrev=0 --tags 2>/dev/null || echo 0.0.0)
@@ -37,8 +38,8 @@ docker-clean:
 version:
 	echo $(DOCKER_HUB)/$(FULL_VERSION)
 
-deploy:
-	kubectl --kubeconfig .k3s.yaml config set-context --current --namespace $(MAIN_PKG)
+deploy: docker docker-push
+	kubectl --kubeconfig .k3s.yaml config set-context --current --namespace $(NAMESPACE)
 	kubectl --kubeconfig .k3s.yaml set image deployment $(MAIN_PKG) $(MAIN_PKG)=ccr.ccs.tencentyun.com/fastapp/$(FULL_VERSION)
 
 .PHONY: build frontend

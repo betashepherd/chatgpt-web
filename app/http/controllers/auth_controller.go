@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"chatgpt-web/pkg/auth"
+	"chatgpt-web/pkg/logger"
 	"chatgpt-web/pkg/model/user"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -115,6 +116,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	}
 
 	if _, err := user.CreateUser(req.Name, req.Password); err != nil {
+		logger.Danger("create user error:", err)
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
