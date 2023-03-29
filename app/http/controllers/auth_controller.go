@@ -100,3 +100,24 @@ func (c *AuthController) DeleteUser(ctx *gin.Context) {
 
 	c.ResponseJson(ctx, http.StatusOK, "", nil)
 }
+
+func (c *AuthController) Register(ctx *gin.Context) {
+	var req authRequest
+
+	if err := ctx.BindJSON(&req); err != nil {
+		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	if req.Name == "" || req.Password == "" {
+		c.ResponseJson(ctx, http.StatusUnauthorized, "请输入用户名密码", nil)
+		return
+	}
+
+	if _, err := user.CreateUser(req.Name, req.Password); err != nil {
+		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	c.ResponseJson(ctx, http.StatusOK, "", nil)
+}

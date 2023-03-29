@@ -21,3 +21,4 @@ storage.json
 chatgpt-web
 chat.db
 data
+.k3s.yaml

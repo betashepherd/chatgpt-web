@@ -75,7 +75,7 @@ spec:
     spec:
       containers:
         - name: chatgpt-web
-          image: ccr.ccs.tencentyun.com/fastapp/chatgpt-web:v1.0.0.81.affda7b
+          image: ccr.ccs.tencentyun.com/fastapp/chatgpt-web:v1.0.0.85.057548d
           env:
             - name: APIKEY
               value: "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"
@@ -109,7 +109,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  namespace: chatgpt-web
+  namespace: apps
   name: chatgpt-web-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
