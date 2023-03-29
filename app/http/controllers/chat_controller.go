@@ -13,7 +13,7 @@ import (
 	"chatgpt-web/config"
 	"chatgpt-web/pkg/logger"
 	"github.com/gin-gonic/gin"
-	gogpt "github.com/sashabaranov/go-openai"
+	"github.com/sashabaranov/go-openai"
 )
 
 // ChatController 首页控制器
@@ -35,7 +35,7 @@ func (c *ChatController) Index(ctx *gin.Context) {
 
 // Completion 回复
 func (c *ChatController) Completion(ctx *gin.Context) {
-	var request gogpt.ChatCompletionRequest
+	var request openai.ChatCompletionRequest
 	err := ctx.BindJSON(&request)
 	if err != nil {
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
@@ -48,7 +48,7 @@ func (c *ChatController) Completion(ctx *gin.Context) {
 	}
 
 	cnf := config.LoadConfig()
-	gptConfig := gogpt.DefaultConfig(cnf.ApiKey)
+	gptConfig := openai.DefaultConfig(cnf.ApiKey)
 
 	if cnf.Proxy != "" {
 		transport := &http.Transport{}
@@ -80,16 +80,16 @@ func (c *ChatController) Completion(ctx *gin.Context) {
 		gptConfig.BaseURL = cnf.ApiURL
 	}
 
-	client := gogpt.NewClientWithConfig(gptConfig)
+	client := openai.NewClientWithConfig(gptConfig)
 	if request.Messages[0].Role != "system" {
-		newMessage := append([]gogpt.ChatCompletionMessage{
+		newMessage := append([]openai.ChatCompletionMessage{
 			{Role: "system", Content: cnf.BotDesc},
 		}, request.Messages...)
 		request.Messages = newMessage
 		logger.Info(request.Messages)
 	}
 
-	if cnf.Model == gogpt.GPT3Dot5Turbo0301 || cnf.Model == gogpt.GPT3Dot5Turbo {
+	if cnf.Model == openai.GPT3Dot5Turbo0301 || cnf.Model == openai.GPT3Dot5Turbo {
 		request.Model = cnf.Model
 		resp, err := client.CreateChatCompletion(ctx, request)
 		if err != nil {
@@ -108,7 +108,7 @@ func (c *ChatController) Completion(ctx *gin.Context) {
 		prompt = strings.Trim(prompt, "/n")
 
 		logger.Info("request prompt is %s", prompt)
-		req := gogpt.CompletionRequest{
+		req := openai.CompletionRequest{
 			Model:            cnf.Model,
 			MaxTokens:        cnf.MaxTokens,
 			TopP:             cnf.TopP,
@@ -125,7 +125,7 @@ func (c *ChatController) Completion(ctx *gin.Context) {
 
 		c.ResponseJson(ctx, http.StatusOK, "", gin.H{
 			"reply": resp.Choices[0].Text,
-			"messages": append(request.Messages, gogpt.ChatCompletionMessage{
+			"messages": append(request.Messages, openai.ChatCompletionMessage{
 				Role:    "assistant",
 				Content: resp.Choices[0].Text,
 			}),
