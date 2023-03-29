@@ -11,7 +11,7 @@ var authController = NewAuthController()
 
 // RegisterWebRoutes 注册路由
 func RegisterWebRoutes(router *gin.Engine) {
-
+	router.Use(middlewares.Recovery)
 	router.Use(middlewares.Cors)
 	router.GET("", chatController.Index)
 	router.POST("/user/auth", authController.Auth)

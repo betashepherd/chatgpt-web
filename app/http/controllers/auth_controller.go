@@ -116,7 +116,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 	}
 
 	if _, err := user.CreateUser(req.Name, req.Password); err != nil {
-		logger.Danger("create user error:", err)
+		logger.Info("create user error:", err)
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
