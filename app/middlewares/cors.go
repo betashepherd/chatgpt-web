@@ -3,6 +3,7 @@ package middlewares
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func Cors(c *gin.Context) {
@@ -18,5 +19,11 @@ func Cors(c *gin.Context) {
 	if method == "OPTIONS" {
 		c.AbortWithStatus(http.StatusNoContent)
 	}
+
+	if strings.HasPrefix(c.Request.URL.Path, "/data") {
+		c.Writer.Header().Set("Content-Type", "application/octet-stream")
+		c.Header("Cache-Control", "no-cache")
+	}
+
 	c.Next()
 }

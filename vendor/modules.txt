@@ -1,6 +1,11 @@
 # github.com/alecthomas/kong v0.7.1
 ## explicit; go 1.18
 github.com/alecthomas/kong
+# github.com/betashepherd/stomp/v3 v3.0.7
+## explicit; go 1.15
+github.com/betashepherd/stomp/v3
+github.com/betashepherd/stomp/v3/frame
+github.com/betashepherd/stomp/v3/internal/log
 # github.com/bytedance/sonic v1.8.0
 ## explicit; go 1.15
 github.com/bytedance/sonic
@@ -68,9 +73,15 @@ github.com/goccy/go-json/internal/runtime
 # github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 ## explicit; go 1.18
 github.com/golang-jwt/jwt/v5
+# github.com/gomodule/redigo v1.8.9
+## explicit; go 1.16
+github.com/gomodule/redigo/redis
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
+# github.com/gorilla/websocket v1.5.0
+## explicit; go 1.12
+github.com/gorilla/websocket
 # github.com/jinzhu/inflection v1.0.0
 ## explicit
 github.com/jinzhu/inflection
@@ -108,6 +119,15 @@ github.com/remyoudompheng/bigfft
 # github.com/sashabaranov/go-openai v1.5.7
 ## explicit; go 1.18
 github.com/sashabaranov/go-openai
+# github.com/satori/go.uuid v1.2.0
+## explicit
+github.com/satori/go.uuid
+# github.com/sirupsen/logrus v1.9.0
+## explicit; go 1.13
+github.com/sirupsen/logrus
+# github.com/streadway/amqp v1.0.0
+## explicit; go 1.10
+github.com/streadway/amqp
 # github.com/twitchyliquid64/golang-asm v0.15.1
 ## explicit; go 1.13
 github.com/twitchyliquid64/golang-asm/asm/arch
@@ -137,7 +157,15 @@ golang.org/x/arch/x86/x86asm
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
+golang.org/x/crypto/chacha20
+golang.org/x/crypto/curve25519
+golang.org/x/crypto/curve25519/internal/field
+golang.org/x/crypto/ed25519
+golang.org/x/crypto/internal/alias
+golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/sha3
+golang.org/x/crypto/ssh
+golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
 # golang.org/x/net v0.8.0
 ## explicit; go 1.17
 golang.org/x/net/http/httpguts
@@ -150,9 +178,15 @@ golang.org/x/net/proxy
 # golang.org/x/sys v0.6.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
+golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
+golang.org/x/sys/windows
 # golang.org/x/text v0.8.0
 ## explicit; go 1.17
+golang.org/x/text/encoding
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/simplifiedchinese
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag

@@ -19,9 +19,11 @@ func RegisterWebRoutes(router *gin.Engine) {
 	chat := router.Group("/chat").Use(middlewares.Jwt)
 	{
 		chat.POST("/completion", chatController.Completion)
+		chat.POST("/completion/stream", chatController.CompletionStream)
 	}
 	auth := router.Group("/auth").Use(middlewares.Jwt)
 	{
 		auth.POST("/info", authController.Info)
 	}
+
 }

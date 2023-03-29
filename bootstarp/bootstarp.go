@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"chatgpt-web/config"
+	"chatgpt-web/library/lfs"
 	"chatgpt-web/pkg/logger"
 	"net/http"
 	"strconv"
@@ -13,6 +14,8 @@ func StartWebServer() {
 	SetupDB()
 	initTemplateDir()
 	initStaticServer()
+
+	lfs.Init("./data", "/data")
 
 	// 启动服务
 	port := config.LoadConfig().Port

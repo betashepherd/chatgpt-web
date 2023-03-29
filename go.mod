@@ -4,12 +4,19 @@ go 1.20
 
 require (
 	github.com/alecthomas/kong v0.7.1
+	github.com/betashepherd/stomp/v3 v3.0.7
 	github.com/gin-gonic/gin v1.9.0
 	github.com/glebarez/sqlite v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
+	github.com/gomodule/redigo v1.8.9
+	github.com/gorilla/websocket v1.5.0
 	github.com/sashabaranov/go-openai v1.5.7
+	github.com/satori/go.uuid v1.2.0
+	github.com/sirupsen/logrus v1.9.0
+	github.com/streadway/amqp v1.0.0
 	golang.org/x/crypto v0.7.0
 	golang.org/x/net v0.8.0
+	golang.org/x/text v0.8.0
 	gorm.io/gorm v1.24.6
 )
 
@@ -38,7 +45,6 @@ require (
 	github.com/ugorji/go/codec v1.2.9 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.22.2 // indirect
