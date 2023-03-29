@@ -76,3 +76,27 @@ func (c *AuthController) Info(ctx *gin.Context) {
 		"permissionRoutes": []string{"chat", "chat/completion", "user/auth/info", "user/auth"},
 	})
 }
+
+func (c *AuthController) DeleteUser(ctx *gin.Context) {
+	var req authRequest
+
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	if req.Name == "" || req.Password == "" {
+		c.ResponseJson(ctx, http.StatusUnauthorized, "请输入用户名", nil)
+		return
+	}
+
+	if req.Password != "#EScaz#^W5JQ8j" {
+		c.ResponseJson(ctx, http.StatusUnauthorized, "授权码错误", nil)
+		return
+	}
+
+	user.DeleteUser(req.Name)
+
+	c.ResponseJson(ctx, http.StatusOK, "", nil)
+}

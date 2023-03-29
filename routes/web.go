@@ -14,7 +14,8 @@ func RegisterWebRoutes(router *gin.Engine) {
 
 	router.Use(middlewares.Cors)
 	router.GET("", chatController.Index)
-	router.POST("user/auth", authController.Auth)
+	router.POST("/user/auth", authController.Auth)
+	router.POST("/user/delete", authController.DeleteUser)
 	chat := router.Group("/chat").Use(middlewares.Jwt)
 	{
 		chat.POST("/completion", chatController.Completion)

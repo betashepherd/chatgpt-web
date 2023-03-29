@@ -20,3 +20,15 @@ func CreateUser(name, password string) (user *User, err error) {
 	err = result.Error
 	return
 }
+
+func DeleteUser(name string) {
+	var user *User
+	err := model.DB.Where("name = ?", name).First(&user).Error
+	if err != nil {
+		return
+	}
+	if user.ID > 0 {
+		model.DB.Delete(&user)
+	}
+	return
+}

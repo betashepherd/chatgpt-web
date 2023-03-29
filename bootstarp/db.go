@@ -22,7 +22,7 @@ func SetupDB() {
 
 	migration(db)
 
-	insertAdmin()
+	//insertAdmin()
 }
 
 // migration 迁移
