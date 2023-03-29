@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"chatgpt-web/library/lfs"
+	"chatgpt-web/library/util"
 	"chatgpt-web/pkg/model/user"
 	"context"
 	"encoding/json"
@@ -225,7 +226,7 @@ func (c *ChatController) Completion(ctx *gin.Context) {
 		}
 
 		ajs, _ := json.Marshal(answer)
-		question := fmt.Sprintf("question_%s", request.Messages[len(request.Messages)-1].Content)
+		question := fmt.Sprintf("question_%s_%s.json", request.Messages[len(request.Messages)-1].Content, util.GetCurrentTime().Format("20060102150405000"))
 		subDir := fmt.Sprintf("chat/%s", authUser.Name)
 		lfs.DataFs.SaveDataFile(question, ajs, subDir)
 		c.ResponseJson(ctx, http.StatusOK, "", answer)
