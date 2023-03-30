@@ -4,6 +4,7 @@ import (
 	"chatgpt-web/library/lfs"
 	"chatgpt-web/library/util"
 	"chatgpt-web/pkg/model/user"
+	"chatgpt-web/pkg/types"
 	"context"
 	"encoding/json"
 	"errors"
@@ -23,6 +24,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/sashabaranov/go-openai"
 )
+
+var chatModels = []string{openai.GPT432K0314, openai.GPT4, openai.GPT40314, openai.GPT432K, openai.GPT3Dot5Turbo, openai.GPT3Dot5Turbo0301}
 
 var wsUpgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -213,7 +216,7 @@ func (c *ChatController) Completion(ctx *gin.Context) {
 		request.Messages = newMessage
 	}
 
-	if cnf.Model == openai.GPT3Dot5Turbo0301 || cnf.Model == openai.GPT3Dot5Turbo {
+	if types.Contains(chatModels, cnf.Model) {
 		request.Model = cnf.Model
 		resp, err := client.CreateChatCompletion(ctx, request)
 		if err != nil {
