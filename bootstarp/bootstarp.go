@@ -4,10 +4,8 @@ import (
 	"chatgpt-web/config"
 	"chatgpt-web/library/lfs"
 	"chatgpt-web/pkg/logger"
-	"github.com/gin-gonic/gin"
-	"mime"
+	"net/http"
 	"strconv"
-	"strings"
 )
 
 func StartWebServer() {
@@ -33,24 +31,10 @@ func StartWebServer() {
 
 // initTemplate 初始化HTML模板加载路径
 func initTemplateDir() {
-	router.LoadHTMLGlob("resources/view/*")
+	router.LoadHTMLGlob("dist/*.html")
 }
 
 // initStaticServer 初始化静态文件处理
 func initStaticServer() {
-	router.GET("/assets/:filename", func(c *gin.Context) {
-		fileName := c.Param("filename")
-		nameSlice := strings.Split(fileName, ".")
-		ext := nameSlice[len(nameSlice)-1]
-		if ext == "js" {
-			c.Header("Content-Type", "application/javascript")
-		} else {
-			c.Header("Content-Type", mime.TypeByExtension(ext))
-		}
-		c.File("static/assets/" + c.Param("filename"))
-	})
-	router.StaticFile("logo192.png", "static/logo192.png")
-	router.StaticFile("logo512.png", "static/logo512.png")
-	router.StaticFile("favicon.ico", "static/favicon.ico")
-	router.StaticFile("manifest.json", "static/manifest.json")
+	router.StaticFS("/assets", http.Dir("dist/assets"))
 }

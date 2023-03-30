@@ -16,8 +16,7 @@ build:
 	go build -tags=jsoniter -mod=vendor -ldflags "-s -w -X 'chatgpt-web/config.BuildVersion=$(FULL_VERSION)' -X 'chatgpt-web/config.BuildTime=$(BUILD_TIME)'" -o $(MAIN_PKG)
 
 frontend:
-	#cd frontend && npm install --registry=https://registry.npm.taobao.org && npm run build:prod && rm -rf ../dist && mv -f dist ../
-	cd chat-new && cnpm install --registry=https://registry.npm.taobao.org && cnpm run build
+	cd chat-new && cnpm install --registry=https://registry.npm.taobao.org && cnpm run build && rm -rf ../dist && mv -f dist ../
 
 docker-login:
 	docker login ccr.ccs.tencentyun.com --username=100001261741 --password=ccr15652936798
