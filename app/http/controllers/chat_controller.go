@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io"
 	"net"
 	"net/http"
@@ -306,4 +307,97 @@ func newDialContext(socks5 string) (dialContextFunc, error) {
 	} else {
 		return baseDialer.DialContext, nil
 	}
+}
+
+func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
+	var request openai.ChatCompletionRequest
+	if err := ctx.BindJSON(&request); err != nil {
+		logrus.Error(err.Error())
+		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	var authUser *user.User
+	if iter, ok := ctx.Get("authUser"); ok {
+		authUser = iter.(*user.User)
+	}
+
+	rjs, _ := json.Marshal(request)
+	logger.Info(authUser.Name, "__", string(rjs))
+
+	if len(request.Messages) == 0 {
+		c.ResponseJson(ctx, http.StatusBadRequest, "request messages required", nil)
+		return
+	}
+
+	cnf := config.LoadConfig()
+	gptConfig := openai.DefaultConfig(cnf.ApiKey)
+
+	if cnf.Proxy != "" {
+		transport := &http.Transport{}
+
+		if strings.HasPrefix(cnf.Proxy, "socks5h://") {
+			// 创建一个 DialContext 对象，并设置代理服务器
+			dialContext, err := newDialContext(cnf.Proxy[10:])
+			if err != nil {
+				panic(err)
+			}
+			transport.DialContext = dialContext
+		} else {
+			// 创建一个 HTTP Transport 对象，并设置代理服务器
+			proxyUrl, err := url.Parse(cnf.Proxy)
+			if err != nil {
+				panic(err)
+			}
+			transport.Proxy = http.ProxyURL(proxyUrl)
+		}
+		// 创建一个 HTTP 客户端，并将 Transport 对象设置为其 Transport 字段
+		gptConfig.HTTPClient = &http.Client{
+			Transport: transport,
+		}
+
+	}
+
+	// 自定义gptConfig.BaseURL
+	if cnf.ApiURL != "" {
+		gptConfig.BaseURL = cnf.ApiURL
+	}
+
+	client := openai.NewClientWithConfig(gptConfig)
+	if request.Messages[0].Role != "system" {
+		newMessage := append([]openai.ChatCompletionMessage{
+			{Role: "system", Content: cnf.BotDesc},
+		}, request.Messages...)
+		request.Messages = newMessage
+	}
+
+	request.Model = cnf.Model
+	stream, err := client.CreateChatCompletionStream(ctx, request)
+	if err != nil {
+		return
+	}
+	defer stream.Close()
+	ctx.Header("Content-Type", "text/event-stream")
+	ctx.Header("Cache-Control", "no-cache")
+	//ctx.Header("Connection", "keep-alive")
+	//ctx.Header("Transfer-Encoding", "chunked")
+	//ctx.Header("Access-Control-Allow-Origin", "*")
+	for {
+		response, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			//fmt.Println("\nStream finished")
+			fmt.Println("\n")
+			return
+		}
+
+		if err != nil {
+			fmt.Printf("\nStream error: %v\n", err)
+			return
+		}
+
+		fmt.Printf(response.Choices[0].Delta.Content)
+		fmt.Fprintf(ctx.Writer, "data: %s\n\n", response.Choices[0].Delta.Content)
+		ctx.Writer.Flush()
+	}
+	return
 }
