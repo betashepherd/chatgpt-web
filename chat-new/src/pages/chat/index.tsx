@@ -9,7 +9,9 @@ import clipboardy from 'clipboardy'
 import MdEditor from "md-editor-rt"
 import "md-editor-rt/lib/style.css"
 import sanitizeHtml from 'sanitize-html';
-import {completion} from '../../services/port'
+import {completion} from '../../services/port';
+import axios from "_axios@1.3.4@axios";
+import {getCookie} from "../../utils/cookie";
 
 const defaultQuickReplies = [
     {
@@ -142,6 +144,36 @@ function App() {
             content: question,
         })
 
+        // const streamServiceAxios = axios.create({
+        //     withCredentials: false, // 跨域请求是否需要携带 cookie
+        // });
+        //
+        // await streamServiceAxios({
+        //     url: "/chat/completion/stream-v2",
+        //     headers: {
+        //         "Authorization": "Bearer " + getCookie("mojolicious") // 请求头携带 token
+        //     },
+        //     method: "get",
+        //     responseType: "stream",
+        //     data: {
+        //         messages: chatContext,
+        //     },
+        // }).then(response => {
+        //     console.log('stream resp status---->>>>>>>>', response.status)
+        //     console.log('stream log------------>>>>>>>>', response.data)
+        //     if (response.status === 200) {
+        //         let reply = clearReply(response.data.trim())
+        //         appendMsg({
+        //             type: 'text',
+        //             content: {text: reply},
+        //             user: {avatar: '//gitclone.com/download1/gitclone.png'},
+        //         })
+        //         setPercentage(0)
+        //     }
+        // }).catch(error => {
+        //     // handle error
+        //     return toast.fail('请求出错，' + error.text, undefined)
+        // });
 
         const res = await completion(chatContext);
         if (res.data.code === 200) {

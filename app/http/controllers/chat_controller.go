@@ -379,9 +379,10 @@ func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
 	defer stream.Close()
 	ctx.Header("Content-Type", "text/event-stream")
 	ctx.Header("Cache-Control", "no-cache")
-	//ctx.Header("Connection", "keep-alive")
-	//ctx.Header("Transfer-Encoding", "chunked")
-	//ctx.Header("Access-Control-Allow-Origin", "*")
+	ctx.Header("Connection", "keep-alive")
+	ctx.Header("Transfer-Encoding", "chunked")
+	ctx.Header("Access-Control-Allow-Origin", "*")
+
 	for {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
@@ -396,7 +397,7 @@ func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
 		}
 
 		fmt.Printf(response.Choices[0].Delta.Content)
-		fmt.Fprintf(ctx.Writer, "data: %s\n\n", response.Choices[0].Delta.Content)
+		fmt.Fprintf(ctx.Writer, "%s\n\n", response.Choices[0].Delta.Content)
 		ctx.Writer.Flush()
 	}
 	return
