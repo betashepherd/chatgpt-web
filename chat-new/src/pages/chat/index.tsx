@@ -10,7 +10,7 @@ import MdEditor from "md-editor-rt"
 import "md-editor-rt/lib/style.css"
 import sanitizeHtml from 'sanitize-html';
 import {completion} from '../../services/port';
-import axios from "_axios@1.3.4@axios";
+import axios from "axios";
 import {getCookie} from "../../utils/cookie";
 
 const defaultQuickReplies = [
