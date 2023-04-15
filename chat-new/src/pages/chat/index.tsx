@@ -179,6 +179,7 @@ function App() {
                 }
             });
             let n = 0;
+            answer = '';
             evtSource.addEventListener("message", function (event: any) {
                 n += 1;
                 let djs = JSON.parse(event.data)
