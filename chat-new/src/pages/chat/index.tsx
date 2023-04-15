@@ -37,6 +37,7 @@ const initialMessages = [
 ]
 
 let chatContext: any[] = []
+let answer = '';
 
 function App() {
     const {messages, appendMsg, updateMsg, setTyping, prependMsgs} = useMessages(initialMessages)
@@ -99,7 +100,7 @@ function App() {
                 const isRichText = richTextRegex.test(text);
                 return (
                     <Bubble id={msgId}><MdEditor
-                        style={{float: 'left' }}
+                        style={{float: 'left'}}
                         modelValue={text} // 要展示的markdown字符串
                         previewOnly={true} // 只展示预览框部分
                     ></MdEditor></Bubble>
@@ -125,6 +126,7 @@ function App() {
 
     async function handleQuickReplyClick(item: { name: string }) {
         if (item.name === '清空会话') {
+            answer = '';
             chatContext.splice(0)
             messages.splice(0)
             prependMsgs(messages)
@@ -167,7 +169,6 @@ function App() {
         //     return toast.fail('请求出错，' + res.data.errorMsg, undefined)
         // }
 
-        let answer = '';
         const res = await send_question(chatContext);
         if (res.data.code === 200) {
             setPercentage(0)
@@ -181,31 +182,30 @@ function App() {
             evtSource.addEventListener("message", function (event: any) {
                 n += 1;
                 let djs = JSON.parse(event.data)
-                answer += djs.data
-                if (n > 1) {
-                    updateMsg(res.data.data.id, {
-                        type: 'text',
-                        content: {text: answer},
-                        user: {avatar: '//gitclone.com/download1/gitclone.png'},
-                    });
+                if (djs.data == "--_--xfsdkjfkjsdfjdksjfkdsjfksdjkfjsdkdjf") {
+                    res.data.data.messages.push({role: "assistant", content: answer})
+                    chatContext = res.data.data.messages
                 } else {
-                    appendMsg({
-                        _id: res.data.data.id,
-                        type: 'text',
-                        content: {text: answer},
-                        user: {avatar: '//gitclone.com/download1/gitclone.png'},
-                    });
+                    answer += djs.data
+                    if (n > 1) {
+                        updateMsg(res.data.data.id, {
+                            type: 'text',
+                            content: {text: answer},
+                            user: {avatar: '//gitclone.com/download1/gitclone.png'},
+                        });
+                    } else {
+                        appendMsg({
+                            _id: res.data.data.id,
+                            type: 'text',
+                            content: {text: answer},
+                            user: {avatar: '//gitclone.com/download1/gitclone.png'},
+                        });
+                    }
                 }
             });
-
-            res.data.data.messages.push({role: "assistant", content: answer})
-
-            chatContext = res.data.data.messages
-            console.log(chatContext)
             evtSource.addEventListener("open", function (event: any) {
                 console.log("open");
             });
-
             evtSource.addEventListener("error", function (event: any) {
                 console.log("error");
             });

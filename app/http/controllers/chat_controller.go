@@ -425,6 +425,8 @@ func (c *ChatController) Reply(ctx *gin.Context) {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
 			fmt.Println("\nStream finished")
+			js, _ := json.Marshal(gin.H{"data": "--_--xfsdkjfkjsdfjdksjfkdsjfksdjkfjsdkdjf"})
+			fmt.Fprintf(ctx.Writer, "data: %s\n\n", string(js))
 			return
 		}
 
