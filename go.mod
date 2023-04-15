@@ -9,7 +9,9 @@ require (
 	github.com/glebarez/sqlite v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/gomodule/redigo v1.8.9
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
+	github.com/orcaman/concurrent-map/v2 v2.0.1
 	github.com/sashabaranov/go-openai v1.5.7
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.0
@@ -30,7 +32,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

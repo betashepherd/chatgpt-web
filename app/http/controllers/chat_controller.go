@@ -22,7 +22,9 @@ import (
 	"chatgpt-web/config"
 	"chatgpt-web/pkg/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -51,7 +53,7 @@ func (c *ChatController) Index(ctx *gin.Context) {
 	})
 }
 
-func (c *ChatController) CompletionStream(ctx *gin.Context) {
+func (c *ChatController) CompletionWsStream(ctx *gin.Context) {
 	wsClient, err := wsUpgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
@@ -309,7 +311,9 @@ func newDialContext(socks5 string) (dialContextFunc, error) {
 	}
 }
 
-func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
+var questions = cmap.New[openai.ChatCompletionRequest]()
+
+func (c *ChatController) Question(ctx *gin.Context) {
 	var request openai.ChatCompletionRequest
 	if err := ctx.BindJSON(&request); err != nil {
 		logrus.Error(err.Error())
@@ -317,19 +321,58 @@ func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
 		return
 	}
 
-	var authUser *user.User
-	if iter, ok := ctx.Get("authUser"); ok {
-		authUser = iter.(*user.User)
-	}
-
-	rjs, _ := json.Marshal(request)
-	logger.Info(authUser.Name, "__", string(rjs))
-
 	if len(request.Messages) == 0 {
 		c.ResponseJson(ctx, http.StatusBadRequest, "request messages required", nil)
 		return
 	}
 
+	var authUser *user.User
+	if iter, ok := ctx.Get("authUser"); ok {
+		authUser = iter.(*user.User)
+	}
+	cnf := config.LoadConfig()
+	if request.Messages[0].Role != "system" {
+		newMessage := append([]openai.ChatCompletionMessage{
+			{Role: "system", Content: cnf.BotDesc},
+		}, request.Messages...)
+		request.Messages = newMessage
+	}
+
+	rjs, _ := json.Marshal(request)
+	logger.Info(authUser.Name, "__", string(rjs))
+
+	questions.Set(authUser.Name, request)
+	answer := gin.H{
+		"id":       uuid.New().String(),
+		"reply":    "",
+		"messages": request.Messages,
+	}
+	c.ResponseJson(ctx, http.StatusOK, "", answer)
+}
+
+func (c *ChatController) Reply(ctx *gin.Context) {
+	ctx.Header("Content-Type", "text/event-stream")
+	ctx.Header("Cache-Control", "no-cache")
+	ctx.Header("Connection", "keep-alive")
+	ctx.Header("Transfer-Encoding", "chunked")
+	ctx.Header("Access-Control-Allow-Origin", "*")
+
+	var authUser *user.User
+	if iter, ok := ctx.Get("authUser"); ok {
+		authUser = iter.(*user.User)
+	}
+
+	request, ok := questions.Get(authUser.Name)
+	if !ok {
+		c.ResponseJson(ctx, http.StatusBadRequest, "no request exists", nil)
+		return
+	}
+	questions.Remove(authUser.Name)
+
+	if len(request.Messages) == 0 {
+		c.ResponseJson(ctx, http.StatusBadRequest, "request messages required", nil)
+		return
+	}
 	cnf := config.LoadConfig()
 	gptConfig := openai.DefaultConfig(cnf.ApiKey)
 
@@ -377,17 +420,11 @@ func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
 		return
 	}
 	defer stream.Close()
-	ctx.Header("Content-Type", "text/event-stream")
-	ctx.Header("Cache-Control", "no-cache")
-	ctx.Header("Connection", "keep-alive")
-	ctx.Header("Transfer-Encoding", "chunked")
-	ctx.Header("Access-Control-Allow-Origin", "*")
 
 	for {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
-			//fmt.Println("\nStream finished")
-			fmt.Println("\n")
+			fmt.Println("\nStream finished")
 			return
 		}
 
@@ -396,8 +433,8 @@ func (c *ChatController) CompletionStreamV2(ctx *gin.Context) {
 			return
 		}
 
-		fmt.Printf(response.Choices[0].Delta.Content)
-		fmt.Fprintf(ctx.Writer, "%s\n\n", response.Choices[0].Delta.Content)
+		js, _ := json.Marshal(gin.H{"data": response.Choices[0].Delta.Content})
+		fmt.Fprintf(ctx.Writer, "data:%s\n\n", string(js))
 		ctx.Writer.Flush()
 	}
 	return

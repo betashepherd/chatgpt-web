@@ -9,8 +9,8 @@ import clipboardy from 'clipboardy'
 import MdEditor from "md-editor-rt"
 import "md-editor-rt/lib/style.css"
 import sanitizeHtml from 'sanitize-html';
-import {completion} from '../../services/port';
-import axios from "axios";
+import {send_question} from '../../services/port';
+import {EventSourcePolyfill} from 'event-source-polyfill';
 import {getCookie} from "../../utils/cookie";
 
 const defaultQuickReplies = [
@@ -39,7 +39,7 @@ const initialMessages = [
 let chatContext: any[] = []
 
 function App() {
-    const {messages, appendMsg, setTyping, prependMsgs} = useMessages(initialMessages)
+    const {messages, appendMsg, updateMsg, setTyping, prependMsgs} = useMessages(initialMessages)
     const [percentage, setPercentage] = useState(0)
 
     const handleFocus = () => {
@@ -88,27 +88,35 @@ function App() {
     }
 
     function renderMessageContent(msg: MessageProps) {
-        const {type, content} = msg
+        const {_id, type, content} = msg
 
         switch (type) {
             case 'text':
                 let text = content.text
+                let msgId = _id.toString()
                 let isHtml = sanitizeHtml(text) !== text;
                 const richTextRegex = /(<[^>]+>)|(```[^`]*```)/gi;
                 const isRichText = richTextRegex.test(text);
-                if (isHtml || isRichText) {
-                    return (
-                        <Bubble><MdEditor
-                            style={{float: 'left'}}
-                            modelValue={text} // 要展示的markdown字符串
-                            previewOnly={true} // 只展示预览框部分
-                        ></MdEditor></Bubble>
-                    )
-                } else {
-                    return (
-                        <Bubble>{text}</Bubble>
-                    )
-                }
+                return (
+                    <Bubble id={msgId}><MdEditor
+                        style={{float: 'left' }}
+                        modelValue={text} // 要展示的markdown字符串
+                        previewOnly={true} // 只展示预览框部分
+                    ></MdEditor></Bubble>
+                );
+            // if (isHtml || isRichText) {
+            //     return (
+            //         <Bubble id={msgId}><MdEditor
+            //             style={{float: 'left'}}
+            //             modelValue={text} // 要展示的markdown字符串
+            //             previewOnly={false} // 只展示预览框部分
+            //         ></MdEditor></Bubble>
+            //     )
+            // } else {
+            //     return (
+            //         <Bubble id={msgId}>{text}</Bubble>
+            //     )
+            // }
 
             default:
                 return null
@@ -117,7 +125,6 @@ function App() {
 
     async function handleQuickReplyClick(item: { name: string }) {
         if (item.name === '清空会话') {
-
             chatContext.splice(0)
             messages.splice(0)
             prependMsgs(messages)
@@ -144,50 +151,71 @@ function App() {
             content: question,
         })
 
-        // const streamServiceAxios = axios.create({
-        //     withCredentials: false, // 跨域请求是否需要携带 cookie
-        // });
+        // const res = await completion(chatContext);
+        // if (res.data.code === 200) {
+        //     let reply = clearReply(res.data.data.reply)
+        //     appendMsg({
+        //         type: 'text',
+        //         content: {text: reply},
+        //         user: {avatar: '//gitclone.com/download1/gitclone.png'},
+        //     })
+        //     chatContext = res.data.data.messages
+        //     console.log(chatContext)
+        //     setPercentage(0)
         //
-        // await streamServiceAxios({
-        //     url: "/chat/completion/stream-v2",
-        //     headers: {
-        //         "Authorization": "Bearer " + getCookie("mojolicious") // 请求头携带 token
-        //     },
-        //     method: "get",
-        //     responseType: "stream",
-        //     data: {
-        //         messages: chatContext,
-        //     },
-        // }).then(response => {
-        //     console.log('stream resp status---->>>>>>>>', response.status)
-        //     console.log('stream log------------>>>>>>>>', response.data)
-        //     if (response.status === 200) {
-        //         let reply = clearReply(response.data.trim())
-        //         appendMsg({
-        //             type: 'text',
-        //             content: {text: reply},
-        //             user: {avatar: '//gitclone.com/download1/gitclone.png'},
-        //         })
-        //         setPercentage(0)
-        //     }
-        // }).catch(error => {
-        //     // handle error
-        //     return toast.fail('请求出错，' + error.text, undefined)
-        // });
+        // } else {
+        //     return toast.fail('请求出错，' + res.data.errorMsg, undefined)
+        // }
 
-        const res = await completion(chatContext);
+        let answer = '';
+        const res = await send_question(chatContext);
         if (res.data.code === 200) {
-            let reply = clearReply(res.data.data.reply)
-            appendMsg({
-                type: 'text',
-                content: {text: reply},
-                user: {avatar: '//gitclone.com/download1/gitclone.png'},
-            })
+            setPercentage(0)
+            setTyping(false)
+            const evtSource = new EventSourcePolyfill('/chat/reply', {
+                headers: {
+                    Authorization: "Bearer " + getCookie("mojolicious") // 请求头携带 token
+                }
+            });
+            let n = 0;
+            evtSource.addEventListener("message", function (event: any) {
+                n += 1;
+                let djs = JSON.parse(event.data)
+                answer += djs.data
+                if (n > 1) {
+                    updateMsg(res.data.data.id, {
+                        type: 'text',
+                        content: {text: answer},
+                        user: {avatar: '//gitclone.com/download1/gitclone.png'},
+                    });
+                } else {
+                    appendMsg({
+                        _id: res.data.data.id,
+                        type: 'text',
+                        content: {text: answer},
+                        user: {avatar: '//gitclone.com/download1/gitclone.png'},
+                    });
+                }
+            });
+
+            res.data.data.messages.push({role: "assistant", content: answer})
+
             chatContext = res.data.data.messages
             console.log(chatContext)
-            setPercentage(0)
+            evtSource.addEventListener("open", function (event: any) {
+                console.log("open");
+            });
 
+            evtSource.addEventListener("error", function (event: any) {
+                console.log("error");
+            });
+
+            evtSource.addEventListener("close", function (event: any) {
+                console.log("close");
+            });
         } else {
+            setPercentage(0)
+            setTyping(false)
             return toast.fail('请求出错，' + res.data.errorMsg, undefined)
         }
     }

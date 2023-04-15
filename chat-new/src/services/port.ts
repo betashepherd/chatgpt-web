@@ -25,3 +25,12 @@ export const completion = (chatContext:any) => {
     });
 };
 
+export const send_question = (chatContext:any) => {
+    return serviceAxios({
+        url: "/chat/question",
+        method: "post",
+        data: {
+            messages: chatContext,
+        },
+    });
+};
