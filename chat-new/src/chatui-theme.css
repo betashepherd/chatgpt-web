@@ -16,3 +16,10 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+.md-editor-content .md-editor-preview-wrapper {
+    padding: 0px;
+}
+.md-editor-content .md-editor-preview, .md-editor-content .md-editor-html {
+    line-height: 0.1;
+}
