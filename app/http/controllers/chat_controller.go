@@ -421,23 +421,39 @@ func (c *ChatController) Reply(ctx *gin.Context) {
 	}
 	defer stream.Close()
 
+	reply := ""
 	for {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
 			fmt.Println("\nStream finished")
 			js, _ := json.Marshal(gin.H{"data": "--_--xfsdkjfkjsdfjdksjfkdsjfksdjkfjsdkdjf"})
 			fmt.Fprintf(ctx.Writer, "data: %s\n\n", string(js))
-			return
+			ctx.Writer.Flush()
+			break
 		}
 
 		if err != nil {
 			fmt.Printf("\nStream error: %v\n", err)
-			return
+			break
 		}
 
+		reply += response.Choices[0].Delta.Content
 		js, _ := json.Marshal(gin.H{"data": response.Choices[0].Delta.Content})
 		fmt.Fprintf(ctx.Writer, "data:%s\n\n", string(js))
 		ctx.Writer.Flush()
 	}
+
+	chatCompletionMessage := openai.ChatCompletionMessage{Role: "assistant", Content: reply}
+	answer := gin.H{
+		"reply":    reply,
+		"messages": append(request.Messages, chatCompletionMessage),
+	}
+
+	ajs, _ := json.Marshal(answer)
+	question := fmt.Sprintf("question_%s_%s.json", request.Messages[len(request.Messages)-1].Content, util.GetCurrentTime().Format("20060102150405000"))
+	subDir := fmt.Sprintf("chat/%s", authUser.Name)
+
+	lfs.DataFs.SaveDataFile(question, ajs, subDir)
+
 	return
 }
