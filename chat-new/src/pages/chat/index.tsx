@@ -171,8 +171,6 @@ function App() {
 
         const res = await send_question(chatContext);
         if (res.data.code === 200) {
-            setPercentage(0)
-            setTyping(false)
             const evtSource = new EventSourcePolyfill('/chat/reply', {
                 headers: {
                     Authorization: "Bearer " + getCookie("mojolicious") // 请求头携带 token
@@ -186,6 +184,8 @@ function App() {
                 if (djs.data == "--_--xfsdkjfkjsdfjdksjfkdsjfksdjkfjsdkdjf") {
                     res.data.data.messages.push({role: "assistant", content: answer})
                     chatContext = res.data.data.messages
+                    setPercentage(0)
+                    setTyping(false)
                 } else {
                     answer += djs.data
                     if (n > 1) {
