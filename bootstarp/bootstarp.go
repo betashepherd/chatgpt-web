@@ -37,4 +37,11 @@ func initTemplateDir() {
 // initStaticServer 初始化静态文件处理
 func initStaticServer() {
 	router.StaticFS("/assets", http.Dir("dist/assets"))
+	router.StaticFile("avatar.png", "dist/avatar.png")
+	router.StaticFile("gitclone.png", "dist/gitclone.png")
+	router.StaticFile("user.png", "dist/user.png")
+	router.StaticFile("logo192.png", "dist/logo192.png")
+	router.StaticFile("logo512.png", "dist/logo512.png")
+	router.StaticFile("favicon.ico", "dist/favicon.ico")
+	router.StaticFile("manifest.json", "dist/manifest.json")
 }

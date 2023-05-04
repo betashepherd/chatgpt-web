@@ -4,7 +4,7 @@ import '../../chatui-theme.css'
 import Chat, {Bubble, MessageProps, Progress, toast, useMessages,} from '@chatui/core'
 import '@chatui/core/dist/index.css'
 import '@chatui/core/es/styles/index.less'
-import {useState} from 'react'
+import React, { useEffect, useRef, useState} from 'react'
 import clipboardy from 'clipboardy'
 import MdEditor from "md-editor-rt"
 import "md-editor-rt/lib/style.css"
@@ -32,7 +32,7 @@ const initialMessages = [
         content: {
             text: '您好，我是AI助理',
         },
-        user: {avatar: '//gitclone.com/download1/gitclone.png'},
+        user: {avatar: '/avatar.png'},
     },
 ]
 
@@ -79,7 +79,7 @@ function App() {
                 type: 'text',
                 content: {text: val},
                 position: 'left',
-                user: {avatar: '//gitclone.com/download1/user.png'},
+                user: {avatar: '/user.png'},
             })
 
             setTyping(true)
@@ -105,19 +105,6 @@ function App() {
                         previewOnly={true} // 只展示预览框部分
                     ></MdEditor></Bubble>
                 );
-            // if (isHtml || isRichText) {
-            //     return (
-            //         <Bubble id={msgId}><MdEditor
-            //             style={{float: 'left'}}
-            //             modelValue={text} // 要展示的markdown字符串
-            //             previewOnly={false} // 只展示预览框部分
-            //         ></MdEditor></Bubble>
-            //     )
-            // } else {
-            //     return (
-            //         <Bubble id={msgId}>{text}</Bubble>
-            //     )
-            // }
 
             default:
                 return null
@@ -130,6 +117,7 @@ function App() {
             chatContext.splice(0)
             messages.splice(0)
             prependMsgs(messages)
+            toast.success('会话已清空', 1500)
         }
         if (item.name === '复制会话') {
             if (messages.length <= 1) {
@@ -140,9 +128,9 @@ function App() {
                 .filter((it) => it.type === 'text')
                 .map((it) => it.content.text)
                 .join('\n')
-            console.log('messages', messages, r)
+            //console.log('messages', messages, r)
             await clipboardy.write(r)
-            toast.success('复制成功', 10_000)
+            toast.success('会话已复制, 去粘贴分享', 1500)
         }
     }
 
@@ -152,22 +140,6 @@ function App() {
             role: 'user',
             content: question,
         })
-
-        // const res = await completion(chatContext);
-        // if (res.data.code === 200) {
-        //     let reply = clearReply(res.data.data.reply)
-        //     appendMsg({
-        //         type: 'text',
-        //         content: {text: reply},
-        //         user: {avatar: '//gitclone.com/download1/gitclone.png'},
-        //     })
-        //     chatContext = res.data.data.messages
-        //     console.log(chatContext)
-        //     setPercentage(0)
-        //
-        // } else {
-        //     return toast.fail('请求出错，' + res.data.errorMsg, undefined)
-        // }
 
         const res = await send_question(chatContext);
         if (res.data.code === 200) {
@@ -192,14 +164,14 @@ function App() {
                         updateMsg(res.data.data.id, {
                             type: 'text',
                             content: {text: answer},
-                            user: {avatar: '//gitclone.com/download1/gitclone.png'},
+                            user: {avatar: '/avatar.png'},
                         });
                     } else {
                         appendMsg({
                             _id: res.data.data.id,
                             type: 'text',
                             content: {text: answer},
-                            user: {avatar: '//gitclone.com/download1/gitclone.png'},
+                            user: {avatar: '/avatar.png'},
                         });
                     }
                 }
@@ -217,7 +189,7 @@ function App() {
         } else {
             setPercentage(0)
             setTyping(false)
-            return toast.fail('请求出错，' + res.data.errorMsg, undefined)
+            return toast.fail('请求出错，' + res.data.errorMsg, 1500)
         }
     }
 
