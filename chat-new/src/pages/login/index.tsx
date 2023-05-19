@@ -81,8 +81,6 @@ const Login = () => {
               登陆
             </Button>
           </div>
-          <script src='https://w102.ttkefu.com/k/?fid=4D3CDF5'></script>
-          <div><a href='http://www.ttkefu.com'>在线客服</a></div>
         </FlexItem>
       </Flex>
     </div>
