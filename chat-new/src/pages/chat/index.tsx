@@ -30,7 +30,7 @@ const initialMessages = [
     {
         type: 'text',
         content: {
-            text: '您好，我是AI助理。如果您觉得不错，欢迎推荐给需要的朋友 :)',
+            text: '您好，我是AI助理。',
         },
         user: {avatar: '/avatar.png'},
     },
