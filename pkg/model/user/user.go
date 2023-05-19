@@ -7,11 +7,10 @@ import (
 
 type User struct {
 	model.BaseModel
-	Name string `gorm:"column:name;type:varchar(255);not null;unique" valid:"name"`
-	//Email    string `gorm:"column:email;type:varchar(255) not null;unique" valid:"email"`
+	Name     string `gorm:"column:name;type:varchar(255);not null;unique" valid:"name"`
 	Password string `gorm:"column:password;type:varchar(255);not null" valid:"password"`
-	// gorm:"-" 使用这个注解GORM读写会忽略这个字段
-	//PasswordComfirm string `gorm:"-" valid:"password_comfirm"`
+	Realname string `gorm:"type:varchar(255);comment:Realname" json:"-"`
+	Stat     int    `gorm:"default:0;comment:0:normal 1:ban" json:"-"`
 }
 
 // ComparePassword 检查密码是否匹配

@@ -22,6 +22,7 @@ func NewAuthController() *AuthController {
 type authRequest struct {
 	Name     string `json:"username"`
 	Password string `json:"password"`
+	Realname string `json:"realname"`
 }
 
 // Auth 认证
@@ -47,6 +48,10 @@ func (c *AuthController) Auth(ctx *gin.Context) {
 		c.ResponseJson(ctx, http.StatusUnauthorized, "密码错误", nil)
 		return
 	}
+	if authUser.Stat != 0 {
+		c.ResponseJson(ctx, http.StatusUnauthorized, "账号暂时无法使用，请联系管理员! QQ Mail: 1299587848#qq.com", nil)
+		return
+	}
 	token, err := auth.Encode(authUser)
 	if err != nil {
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
@@ -66,14 +71,14 @@ func (c *AuthController) Info(ctx *gin.Context) {
 		return
 	}
 
-	userInfo, ok := authUser.(*user.User)
+	_, ok = authUser.(*user.User)
 	if !ok {
 		c.ResponseJson(ctx, http.StatusInternalServerError, "断言登录用户信息失败", nil)
 		return
 	}
 	// 未实现权限系统，写死
 	c.ResponseJson(ctx, http.StatusOK, "", gin.H{
-		"info":             userInfo,
+		//"info":             userInfo,
 		"permissionRoutes": []string{"chat", "chat/completion", "user/auth/info", "user/auth"},
 	})
 }
@@ -110,12 +115,12 @@ func (c *AuthController) Register(ctx *gin.Context) {
 		return
 	}
 
-	if req.Name == "" || req.Password == "" {
+	if req.Name == "" || req.Password == "" || req.Realname == "" {
 		c.ResponseJson(ctx, http.StatusUnauthorized, "请输入用户名密码", nil)
 		return
 	}
 
-	if _, err := user.CreateUser(req.Name, req.Password); err != nil {
+	if _, err := user.CreateUser(req.Name, req.Password, req.Realname); err != nil {
 		logger.Info("create user error:", err)
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return

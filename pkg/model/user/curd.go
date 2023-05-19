@@ -12,10 +12,11 @@ func GetByName(name string) (user *User, err error) {
 }
 
 // CreateUser 创建用户
-func CreateUser(name, password string) (user *User, err error) {
+func CreateUser(name, password, realname string) (user *User, err error) {
 	user = &User{}
 	user.Name = name
 	user.Password = password
+	user.Realname = realname
 	result := model.DB.Create(user)
 	err = result.Error
 	return
