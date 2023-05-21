@@ -5,6 +5,7 @@ import (
 	"chatgpt-web/library/util"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/betashepherd/xunhupay"
@@ -60,6 +61,10 @@ type PayNotifyForm struct {
 }
 
 func (c *PaymentController) Notify(ctx *gin.Context) {
+
+	raw, _ := io.ReadAll(ctx.Request.Body)
+	fmt.Println("raw post", string(raw))
+
 	var req PayNotifyForm
 	if err := ctx.ShouldBind(&req); err != nil {
 		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
