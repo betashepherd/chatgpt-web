@@ -151,26 +151,26 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["open_order_id"] = req.OpenOrderId
 	params["order_title"] = req.OrderTitle
 	params["status"] = req.Status
-	attach, _ := util.Base64Decode(&req.Attach)
-	params["attach"] = string(attach)
+	params["attach"] = req.Attach
 	params["appid"] = req.AppId
 	params["time"] = req.TimeStamp
 	params["nonce_str"] = req.NonceStr
 	appId := "201906157182"                         //Appid
 	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
 	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用
-	reSign := client.Sign(params)
-
-	if req.Hash != reSign {
-		ctx.Writer.Write([]byte("sign error"))
-		return
-	}
 
 	pjs, _ := json.Marshal(req)
 	question := fmt.Sprintf("paynotify_%s.json", util.GetCurrentTime().Format("20060102150405000"))
 	lfs.DataFs.SaveDataFile(question, pjs, "pay")
 
-	ou, err := user.GetByName(params["attach"])
+	reSign := client.Sign(params)
+	if req.Hash != reSign {
+		ctx.Writer.Write([]byte("sign error, "))
+		return
+	}
+
+	attach, _ := util.Base64Decode(&req.Attach)
+	ou, err := user.GetByName(string(attach))
 	if err != nil && err == gorm.ErrRecordNotFound {
 		ctx.Writer.Write([]byte("fail"))
 	} else {
