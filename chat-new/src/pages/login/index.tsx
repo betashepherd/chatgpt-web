@@ -87,7 +87,7 @@ const Login = () => {
           </div>
           <div className={css.m_top}>
             <Button color="primary" size={"sm"} onClick={() => openVIP()}>
-              开通VIP会员
+              VIP会员开通/续费
             </Button>
           </div>
         </FlexItem>

@@ -50,7 +50,11 @@ func (c *AuthController) Auth(ctx *gin.Context) {
 		return
 	}
 	if authUser.Stat != 0 {
-		c.ResponseJson(ctx, http.StatusUnauthorized, "账号暂时无法使用，请联系管理员! QQ Mail: 1299587848#qq.com", nil)
+		if authUser.Stat == 1 {
+			c.ResponseJson(ctx, http.StatusUnauthorized, "账号暂时无法使用，请联系 Mail: 1299587848#qq.com", nil)
+		} else if authUser.Stat == 2 {
+			c.ResponseJson(ctx, http.StatusUnauthorized, "VIP会员已到期，请及时续费", nil)
+		}
 		return
 	}
 	if authUser.ExpireTimestamp > 0 && authUser.ExpireTimestamp < util.GetCurrentTime().Unix() {
