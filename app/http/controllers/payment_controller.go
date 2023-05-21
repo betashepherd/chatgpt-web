@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"gorm.io/gorm"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/betashepherd/xunhupay"
@@ -91,7 +90,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 		return
 	}
 
-	question := fmt.Sprintf("paysucc_%s.json", util.GetCurrentTime().Format("20060102150405000"))
+	question := fmt.Sprintf("paysucc_%s.json", util.GetCurrentTime().Format("20060102150405"))
 	lfs.DataFs.SaveDataFile(question, []byte(execute), "pay")
 
 	data := gin.H{
@@ -132,7 +131,6 @@ type PayNotifyForm struct {
 	OrderTitle    string `form:"order_title"`                       //订单标题
 	Status        string `form:"status"`                            //订单状态 目前固定值为：OD
 	Attach        string `from:"attach"`                            //附加信息
-	AppId         string `form:"appid"`                             //支付渠道ID
 	TimeStamp     string `form:"time"`                              //时间戳
 	NonceStr      string `form:"nonce_str"`                         //随即字符串
 	Hash          string `form:"hash"`                              //签名
@@ -140,15 +138,24 @@ type PayNotifyForm struct {
 
 func (c *PaymentController) Notify(ctx *gin.Context) {
 
-	raw, _ := ioutil.ReadAll(ctx.Request.Body)
-	fmt.Println(string(raw))
-
 	var req PayNotifyForm
 	if err := ctx.ShouldBind(&req); err != nil {
 		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
 		return
 	}
 
+	/**
+	trade_order_id=20230521182853000&
+	total_fee=5.00&
+	transaction_id=2023052122001438701405589683&
+	open_order_id=20231968781&
+	order_title=VIP%E4%BC%9A%E5%91%98_plan1&
+	status=OD&
+	attach=MTc3MTg0Njc5ODY%3D&
+	nonce_str=8486686414&
+	time=1684668484&appid=201906157182&
+	hash=90a7fd99ce995dd16998af196109e279
+	*/
 	params := map[string]string{}
 	params["trade_order_id"] = req.TradeOrderId
 	params["total_fee"] = req.TotalFee
@@ -157,9 +164,9 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["order_title"] = req.OrderTitle
 	params["status"] = req.Status
 	params["attach"] = req.Attach
-	params["appid"] = req.AppId
 	params["time"] = req.TimeStamp
 	params["nonce_str"] = req.NonceStr
+
 	appId := "201906157182"                         //Appid
 	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
 	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用
