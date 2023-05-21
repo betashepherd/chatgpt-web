@@ -29,12 +29,11 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	//支付参数，appid、time、nonce_str和hash这四个参数不用传，调用的时候执行方法内部已经处理
 	params := map[string]string{
 		"version":        "1.1",
-		"trade_order_id": "123456789",
+		"trade_order_id": "15652936798_" + util.GetCurrentTime().Format("20060102150405"),
 		"total_fee":      "0.1",
 		"title":          "VIP会员 - 30天 - 测试",
 		"notify_url":     "https://ai.bgton.cn/payment/notify",
 		"return_url":     "https://ai.bgton.cn",
-		"wap_name":       "AIGC 助手",
 		"attach":         "15652936798",
 	}
 
@@ -43,6 +42,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 		panic(err)
 	}
 	fmt.Println(execute) //打印支付结果
+	c.ResponseJson(ctx, http.StatusOK, "", execute)
 }
 
 type PayNotifyForm struct {
