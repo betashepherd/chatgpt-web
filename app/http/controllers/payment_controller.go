@@ -138,25 +138,6 @@ type PayNotifyForm struct {
 
 func (c *PaymentController) Notify(ctx *gin.Context) {
 
-	var req PayNotifyForm
-	if err := ctx.ShouldBind(&req); err != nil {
-		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
-		return
-	}
-
-	/**
-	trade_order_id=20230521182853000&
-	total_fee=5.00&
-	transaction_id=2023052122001438701405589683&
-	open_order_id=20231968781&
-	order_title=VIP%E4%BC%9A%E5%91%98_plan1&
-	status=OD&
-	attach=MTc3MTg0Njc5ODY%3D&
-	nonce_str=8486686414&
-	time=1684668484&
-	appid=201906157182&
-	hash=90a7fd99ce995dd16998af196109e279
-	*/
 	params := map[string]string{}
 	params["trade_order_id"] = ctx.DefaultPostForm("trade_order_id", "")
 	params["total_fee"] = ctx.DefaultPostForm("total_fee", "")
@@ -168,24 +149,26 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["time"] = ctx.DefaultPostForm("time", "")
 	params["nonce_str"] = ctx.DefaultPostForm("nonce_str", "")
 
+	hash := ctx.DefaultPostForm("hash", "")
 	appId := "201906157182"                         //Appid
 	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
 	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用
 
-	pjs, _ := json.Marshal(req)
+	pjs, _ := json.Marshal(params)
 	question := fmt.Sprintf("paynotify_%s.json", util.GetCurrentTime().Format("20060102150405000"))
 	lfs.DataFs.SaveDataFile(question, pjs, "pay")
 
 	reSign := client.Sign(params)
-	if req.Hash != reSign {
+	if hash != reSign {
 		fmt.Println(reSign)
 		fmt.Println(string(pjs))
 		ctx.Writer.Write([]byte("sign err"))
 		return
 	}
 
-	attach, _ := util.Base64Decode(&req.Attach)
-	ou, err := user.GetByName(string(attach))
+	attach := params["attach"]
+	username, _ := util.Base64Decode(&attach)
+	ou, err := user.GetByName(string(username))
 	if err != nil && err == gorm.ErrRecordNotFound {
 		ctx.Writer.Write([]byte("fail"))
 		return
