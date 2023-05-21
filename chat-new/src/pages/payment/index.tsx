@@ -35,7 +35,7 @@ const Payment = () => {
       if (res.data.data.password != undefined && res.data.data.password != "") {
         tip += "密码：(" + res.data.data.password + ") ，请牢记。";
       }
-      tip += '支付宝扫码支付，开启AI之旅。'+ "\n";
+      tip += '支付宝扫下面二维码，开启AI之旅(等待1分钟左右)。:)'+ "\n";
       setPaytip(tip);
       setPayimage(res.data.data.url_qrcode);
     }
