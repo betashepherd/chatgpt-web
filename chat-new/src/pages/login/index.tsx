@@ -37,6 +37,10 @@ const Login = () => {
     setLoginForm({ ...loginForm, [name]: value });
   };
 
+  const openVIP = async () => {
+    navigate("/payment");
+  };
+
   return (
     <div className={css.app}>
       <Flex center direction={"column"} style={{ background: "var(--gray-7)" }}>
@@ -77,8 +81,13 @@ const Login = () => {
             />
           </div>
           <div className={css.m_top}>
-            <Button color="primary" block onClick={() => submitLogin()}>
+            <Button color="primary" size={"sm"} onClick={() => submitLogin()}>
               登陆
+            </Button>
+          </div>
+          <div className={css.m_top}>
+            <Button color="primary" size={"sm"} onClick={() => openVIP()}>
+              开通VIP会员
             </Button>
           </div>
         </FlexItem>

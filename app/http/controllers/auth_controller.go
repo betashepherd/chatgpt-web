@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"chatgpt-web/library/util"
 	"chatgpt-web/pkg/auth"
 	"chatgpt-web/pkg/logger"
 	"chatgpt-web/pkg/model/user"
@@ -50,6 +51,10 @@ func (c *AuthController) Auth(ctx *gin.Context) {
 	}
 	if authUser.Stat != 0 {
 		c.ResponseJson(ctx, http.StatusUnauthorized, "账号暂时无法使用，请联系管理员! QQ Mail: 1299587848#qq.com", nil)
+		return
+	}
+	if authUser.ExpireTimestamp > 0 && authUser.ExpireTimestamp < util.GetCurrentTime().Unix() {
+		c.ResponseJson(ctx, http.StatusUnauthorized, "VIP会员已到期, 请续费!", nil)
 		return
 	}
 	token, err := auth.Encode(authUser)
@@ -120,7 +125,7 @@ func (c *AuthController) Register(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := user.CreateUser(req.Name, req.Password, req.Realname); err != nil {
+	if _, err := user.CreateUser(req.Name, req.Password, req.Realname, util.GetCurrentTime().Unix()+24*3600); err != nil {
 		logger.Info("create user error:", err)
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return

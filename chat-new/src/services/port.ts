@@ -34,3 +34,11 @@ export const send_question = (chatContext:any) => {
         },
     });
 };
+
+export const pay = (params: Object) => {
+    return serviceAxios({
+        url: "/payment/pay",
+        method: "post",
+        data: params,
+    });
+};

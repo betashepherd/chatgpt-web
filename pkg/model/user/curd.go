@@ -12,11 +12,24 @@ func GetByName(name string) (user *User, err error) {
 }
 
 // CreateUser 创建用户
-func CreateUser(name, password, realname string) (user *User, err error) {
+func CreateUser(name, password, realname string, expire int64) (user *User, err error) {
 	user = &User{}
 	user.Name = name
 	user.Password = password
 	user.Realname = realname
+	user.ExpireTimestamp = expire
+	result := model.DB.Create(user)
+	err = result.Error
+	return
+}
+
+func InitUser(name, password, realname string, expire int64) (user *User, err error) {
+	user = &User{}
+	user.Name = name
+	user.Password = password
+	user.Realname = realname
+	user.ExpireTimestamp = expire
+	user.Stat = 2 //set waitactive
 	result := model.DB.Create(user)
 	err = result.Error
 	return

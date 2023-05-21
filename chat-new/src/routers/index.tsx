@@ -9,6 +9,7 @@ import NoFind from "../pages/noFind";
 // 需要懒加载的页面组件
 const ChatContainer = lazy(() => import("../pages/chat"));
 const Login = lazy(() => import("../pages/login"));
+const Payment = lazy(() => import("../pages/payment"));
 /**
  * @param Component 懒加载的组件
  * @param code 用于判断权限的字段(你可以自己定)
@@ -56,6 +57,10 @@ const routerConfig: RouteObject[] = [
   {
     path: "/",
     element: <Navigate to="/chat" />,
+  },
+  {
+    path: "/payment",
+    element: LazyLoad(Payment),
   },
   {
     path: "/chat",

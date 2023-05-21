@@ -41,7 +41,7 @@ func insertAdmin() {
 			logger.Danger("insert admin error:", err)
 		}
 		if err == gorm.ErrRecordNotFound {
-			_, err = user.CreateUser(cf.AuthUser, cf.AuthPassword, "admin")
+			_, err = user.CreateUser(cf.AuthUser, cf.AuthPassword, "admin", 0)
 			if err != nil {
 				logger.Danger("create admin error:", err)
 			}
