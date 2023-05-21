@@ -165,6 +165,8 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 
 	reSign := client.Sign(params)
 	if req.Hash != reSign {
+		fmt.Println(reSign)
+		fmt.Println(string(pjs))
 		ctx.Writer.Write([]byte("sign error, "))
 		return
 	}
