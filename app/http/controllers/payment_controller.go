@@ -153,19 +153,20 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	status=OD&
 	attach=MTc3MTg0Njc5ODY%3D&
 	nonce_str=8486686414&
-	time=1684668484&appid=201906157182&
+	time=1684668484&
+	appid=201906157182&
 	hash=90a7fd99ce995dd16998af196109e279
 	*/
 	params := map[string]string{}
-	params["trade_order_id"] = req.TradeOrderId
-	params["total_fee"] = req.TotalFee
-	params["transaction_id"] = req.TransactionId
-	params["open_order_id"] = req.OpenOrderId
-	params["order_title"] = req.OrderTitle
-	params["status"] = req.Status
-	params["attach"] = req.Attach
-	params["time"] = req.TimeStamp
-	params["nonce_str"] = req.NonceStr
+	params["trade_order_id"] = ctx.DefaultPostForm("trade_order_id", "")
+	params["total_fee"] = ctx.DefaultPostForm("total_fee", "")
+	params["transaction_id"] = ctx.DefaultPostForm("transaction_id", "")
+	params["open_order_id"] = ctx.DefaultPostForm("open_order_id", "")
+	params["order_title"] = ctx.DefaultPostForm("order_title", "")
+	params["status"] = ctx.DefaultPostForm("status", "")
+	params["attach"] = ctx.DefaultPostForm("attach", "")
+	params["time"] = ctx.DefaultPostForm("time", "")
+	params["nonce_str"] = ctx.DefaultPostForm("nonce_str", "")
 
 	appId := "201906157182"                         //Appid
 	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
@@ -179,7 +180,7 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	if req.Hash != reSign {
 		fmt.Println(reSign)
 		fmt.Println(string(pjs))
-		ctx.Writer.Write([]byte("sign error, "))
+		ctx.Writer.Write([]byte("sign err"))
 		return
 	}
 
@@ -187,6 +188,7 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	ou, err := user.GetByName(string(attach))
 	if err != nil && err == gorm.ErrRecordNotFound {
 		ctx.Writer.Write([]byte("fail"))
+		return
 	} else {
 		ou.Stat = 0 // 激活
 		ou.Save()
