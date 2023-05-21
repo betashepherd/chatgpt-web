@@ -7,6 +7,7 @@ import (
 	"chatgpt-web/pkg/model/user"
 	"encoding/json"
 	"fmt"
+	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
 	"net/http"
 
@@ -50,7 +51,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	//支付参数，appid、time、nonce_str和hash这四个参数不用传，调用的时候执行方法内部已经处理
 	params := map[string]string{
 		"version":        "1.1",
-		"trade_order_id": util.GetCurrentTime().Format("20060102150405"),
+		"trade_order_id": util.GetCurrentTime().Format("20060102150405") + "_" + uuid.NewV4().String(),
 		"total_fee":      plans[req.Plan],
 		"title":          "VIP会员_" + req.Plan,
 		"notify_url":     "https://ai.bgton.cn/payment/notify",
@@ -60,7 +61,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 
 	execute, err := client.Execute(host, params) //执行支付操作
 	if err != nil {
-		question := fmt.Sprintf("payerr_%s.json", util.GetCurrentTime().Format("20060102150405000"))
+		question := fmt.Sprintf("payerr_%s.json", util.GetCurrentTime().Format("20060102150405"))
 		lfs.DataFs.SaveDataFile(question, []byte(err.Error()), "pay")
 		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
 		return
