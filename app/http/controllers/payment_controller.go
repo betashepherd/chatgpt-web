@@ -60,13 +60,15 @@ type PayNotifyForm struct {
 }
 
 func (c *PaymentController) Notify(ctx *gin.Context) {
-	pjs, _ := json.Marshal(ctx.Request.Body)
-	question := fmt.Sprintf("paynotify_%s_%s.json", pjs, util.GetCurrentTime().Format("20060102150405000"))
-	lfs.DataFs.SaveDataFile(question, pjs, "pay")
 	var req PayNotifyForm
 	if err := ctx.ShouldBind(&req); err != nil {
 		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
 		return
 	}
-	c.ResponseJson(ctx, http.StatusOK, "", nil)
+
+	pjs, _ := json.Marshal(req)
+	question := fmt.Sprintf("paynotify_%s.json", util.GetCurrentTime().Format("20060102150405000"))
+	lfs.DataFs.SaveDataFile(question, pjs, "pay")
+
+	c.ResponseJson(ctx, http.StatusOK, "", req)
 }
