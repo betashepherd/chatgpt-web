@@ -50,7 +50,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	//支付参数，appid、time、nonce_str和hash这四个参数不用传，调用的时候执行方法内部已经处理
 	params := map[string]string{
 		"version":        "1.1",
-		"trade_order_id": util.GetCurrentTime().Format("20060102150405000"),
+		"trade_order_id": util.GetCurrentTime().Format("20060102150405"),
 		"total_fee":      plans[req.Plan],
 		"title":          "VIP会员_" + req.Plan,
 		"notify_url":     "https://ai.bgton.cn/payment/notify",
@@ -79,7 +79,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	err = json.Unmarshal([]byte(execute), &pr)
 
 	if err != nil {
-		question := fmt.Sprintf("payerr_%s.json", util.GetCurrentTime().Format("20060102150405000"))
+		question := fmt.Sprintf("payerr_%s.json", util.GetCurrentTime().Format("20060102150405"))
 		lfs.DataFs.SaveDataFile(question, []byte(err.Error()), "pay")
 		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
 		return
@@ -149,19 +149,19 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["time"] = ctx.DefaultPostForm("time", "")
 	params["nonce_str"] = ctx.DefaultPostForm("nonce_str", "")
 
-	hash := ctx.DefaultPostForm("hash", "")
+	sign := ctx.DefaultPostForm("hash", "")
 	appId := "201906157182"                         //Appid
 	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
 	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用
 
 	pjs, _ := json.Marshal(params)
-	question := fmt.Sprintf("paynotify_%s.json", util.GetCurrentTime().Format("20060102150405000"))
+	question := fmt.Sprintf("paynotify_%s.json", util.GetCurrentTime().Format("20060102150405"))
 	lfs.DataFs.SaveDataFile(question, pjs, "pay")
 
 	reSign := client.Sign(params)
-	if hash != reSign {
-		fmt.Println(reSign)
-		fmt.Println(string(pjs))
+	fmt.Println(sign, reSign, string(pjs))
+
+	if sign != reSign {
 		ctx.Writer.Write([]byte("sign err"))
 		return
 	}
@@ -170,6 +170,7 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	username, _ := util.Base64Decode(&attach)
 	ou, err := user.GetByName(string(username))
 	if err != nil && err == gorm.ErrRecordNotFound {
+		fmt.Println("record not found")
 		ctx.Writer.Write([]byte("fail"))
 		return
 	} else {
