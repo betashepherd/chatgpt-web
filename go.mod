@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/alecthomas/kong v0.7.1
 	github.com/betashepherd/stomp/v3 v3.0.7
+	github.com/betashepherd/xunhupay v0.0.0-20230520093850-b0899a2c24a7
 	github.com/gin-gonic/gin v1.9.0
 	github.com/glebarez/sqlite v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1

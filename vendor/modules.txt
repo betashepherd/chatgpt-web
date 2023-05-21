@@ -6,6 +6,9 @@ github.com/alecthomas/kong
 github.com/betashepherd/stomp/v3
 github.com/betashepherd/stomp/v3/frame
 github.com/betashepherd/stomp/v3/internal/log
+# github.com/betashepherd/xunhupay v0.0.0-20230520093850-b0899a2c24a7
+## explicit; go 1.17
+github.com/betashepherd/xunhupay
 # github.com/bytedance/sonic v1.8.0
 ## explicit; go 1.15
 github.com/bytedance/sonic
