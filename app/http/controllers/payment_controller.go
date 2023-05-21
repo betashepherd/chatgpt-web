@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gorm.io/gorm"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/betashepherd/xunhupay"
@@ -138,6 +139,10 @@ type PayNotifyForm struct {
 }
 
 func (c *PaymentController) Notify(ctx *gin.Context) {
+
+	raw, _ := ioutil.ReadAll(ctx.Request.Body)
+	fmt.Println(string(raw))
+
 	var req PayNotifyForm
 	if err := ctx.ShouldBind(&req); err != nil {
 		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
