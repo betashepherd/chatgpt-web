@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"encoding/json"
 )
 
 type HuPiClient struct {
@@ -36,6 +37,11 @@ func (client *HuPiClient) Execute(host string, params map[string]string) (string
 		data.Add(k, v)
 	}
 	data.Add("hash", client.Sign(params))
+
+	djs, _ := json.Marshal(data)
+
+	fmt.Println("debug---------->>>", string(djs))
+
 	resp, err := http.PostForm(host, data)
 	if err != nil {
 		return "error", err
