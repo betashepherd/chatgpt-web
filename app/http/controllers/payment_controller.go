@@ -10,6 +10,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/betashepherd/xunhupay"
 	"github.com/gin-gonic/gin"
@@ -37,7 +39,6 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 		return
 	}
 	plans := map[string]string{"plan1": "5.00", "plan30": "30.00", "plan90": "90.00"}
-	plansExpire := map[string]int64{"plan1": 24 * 3600, "plan30": 30 * 24 * 3600, "plan90": 90 * 24 * 3600}
 
 	if _, ok := plans[req.Plan]; !ok {
 		c.ResponseJson(ctx, http.StatusOK, "请选择套餐", nil)
@@ -101,25 +102,16 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	}
 
 	nowTime := util.GetCurrentTime().Unix()
-	expire := 3600 + plansExpire[req.Plan]
-	ou, err := user.GetByName(req.Username)
+	_, err = user.GetByName(req.Username)
 	if err != nil && err == gorm.ErrRecordNotFound {
 		//新增
 		pwd, _ := util.NewPwd(10)
 		data["password"] = pwd
-		if _, err := user.InitUser(req.Username, pwd, req.Username, nowTime+expire); err != nil {
+		if _, err := user.InitUser(req.Username, pwd, req.Username, nowTime); err != nil {
 			logger.Info("create user error:", err)
 			c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 			return
 		}
-	} else {
-		//续费
-		if ou.ExpireTimestamp > nowTime {
-			ou.ExpireTimestamp += expire
-		} else {
-			ou.ExpireTimestamp = nowTime + expire
-		}
-		ou.Save()
 	}
 	c.ResponseJson(ctx, http.StatusOK, "", data)
 }
@@ -175,8 +167,18 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 		ctx.Writer.Write([]byte("fail"))
 		return
 	} else {
-		ou.Stat = 0 // 激活
-		ou.Save()
+		plansExpire := map[string]int64{"plan1": 24 * 3600, "plan30": 30 * 24 * 3600, "plan90": 90 * 24 * 3600}
+		planinfo := strings.Split(params["order_title"], "_")
+		if len(planinfo) == 2 {
+			nowtime := time.Now().Unix()
+			if ou.ExpireTimestamp > nowtime {
+				ou.ExpireTimestamp += 3600 + plansExpire[planinfo[1]]
+			} else {
+				ou.ExpireTimestamp = nowtime + 3600 + plansExpire[planinfo[1]]
+			}
+			ou.Stat = 0 // 激活
+			ou.Save()
+		}
 	}
 
 	ctx.Writer.Write([]byte("success"))

@@ -39,9 +39,9 @@ func NewPwd(length int) (string, error) {
 		i = r.Intn(length)
 		b[i], b[j] = b[j], b[i]
 	})
-	fmt.Println(*(*string)(unsafe.Pointer(&b)))
-	isValid := Judge(*(*string)(unsafe.Pointer(&b)))
-	fmt.Println("是否满足复杂度", isValid)
+	//fmt.Println(*(*string)(unsafe.Pointer(&b)))
+	//isValid := Judge(*(*string)(unsafe.Pointer(&b)))
+	//fmt.Println("是否满足复杂度", isValid)
 	return *(*string)(unsafe.Pointer(&b)), nil
 }
 
