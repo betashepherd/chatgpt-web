@@ -94,7 +94,7 @@ const Payment = () => {
               开通
             </Button>
             <Button color="primary" size={"sm"} onClick={() => goLogin()}>
-              登陆
+              返回
             </Button>
           </div>
 
