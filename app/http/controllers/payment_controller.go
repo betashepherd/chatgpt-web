@@ -7,12 +7,13 @@ import (
 	"chatgpt-web/pkg/model/user"
 	"encoding/json"
 	"fmt"
-	uuid "github.com/satori/go.uuid"
-	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
+	"gorm.io/gorm"
 
 	"github.com/betashepherd/xunhupay"
 	"github.com/gin-gonic/gin"
@@ -141,6 +142,7 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["status"] = ctx.DefaultPostForm("status", "")
 	params["attach"] = ctx.DefaultPostForm("attach", "")
 	params["appid"] = ctx.DefaultPostForm("appid", "")
+	params["payer"] = ctx.DefaultPostForm("payer", "")
 	params["time"] = ctx.DefaultPostForm("time", "")
 	params["nonce_str"] = ctx.DefaultPostForm("nonce_str", "")
 
