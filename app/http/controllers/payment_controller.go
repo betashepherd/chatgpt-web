@@ -139,6 +139,7 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["order_title"] = ctx.DefaultPostForm("order_title", "")
 	params["status"] = ctx.DefaultPostForm("status", "")
 	params["attach"] = ctx.DefaultPostForm("attach", "")
+	params["appid"] = ctx.DefaultPostForm("appid", "")
 	params["time"] = ctx.DefaultPostForm("time", "")
 	params["nonce_str"] = ctx.DefaultPostForm("nonce_str", "")
 
@@ -183,3 +184,39 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 
 	ctx.Writer.Write([]byte("success"))
 }
+
+//func (c *PaymentController) Debug(ctx *gin.Context) {
+//
+//	/**
+//
+//	debug---------->>> {"appid":["201906157182"],"attach":["MTc3MTg0Njc5ODY="],"hash":["bdbd40ab4279f514642cefd340182e8c"],"nonce_str":["1684724004"],"notify_url":["https://ai.bgton.cn/payment/notify"],"return_url":["https://ai.bgton.cn"],"time":["1684724004"],"title":["VIP会员_plan1"],"total_fee":["5.00"],"trade_order_id":["20230522105324_7a650d7d-16c2-49a4-88de-94ce3f0319bb"],"version":["1.1"]}
+//
+//	1. 第一次回调 xunhu_sign 计算错误
+//	xunhu_sign := eebed2530dd51975541b66078b837a5a  read_from_form_post
+//	local_sign := 62a72a40b87658fd3433427f1fdc9a34
+//		post_data --->> param1 {"attach":"MTc3MTg0Njc5ODY=","nonce_str":"1211408764","open_order_id":"20231990230","order_title":"VIP会员_plan1","status":"OD","time":"1684724110","total_fee":"5.00","trade_order_id":"20230522105324_7a650d7d-16c2-49a4-88de-94ce3f0319bb","transaction_id":"2023052222001438701409098352"}
+//
+//	2. 第二次回调 xunhu_sign 计算错误
+//	xunhu_sign := f7b9ab7c2b9fdb2d24a9823add872b26
+//	local_sign := f7b9ab7c2b9fdb2d24a9823add872b26
+//		post_data --->> param2 {"attach":"MTc3MTg0Njc5ODY=","nonce_str":"4486119724","open_order_id":"20231990230","order_title":"VIP会员_plan1","status":"OD","time":"1684724194","total_fee":"5.00","trade_order_id":"20230522105324_7a650d7d-16c2-49a4-88de-94ce3f0319bb","transaction_id":"2023052222001438701409098352"}
+//
+//
+//	3. golang sdk
+//	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用 appId := "201906157182"
+//	local_sign := client.Sign(param1)
+//
+//	*/
+//
+//	param1 := map[string]string{"nonce_str": "1211408764", "open_order_id": "20231990230", "order_title": "VIP会员_plan1", "status": "OD", "time": "1684724110", "total_fee": "5.00", "trade_order_id": "20230522105324_7a650d7d-16c2-49a4-88de-94ce3f0319bb", "transaction_id": "2023052222001438701409098352"}
+//
+//	appId := "201906157182"                         //Appid
+//	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
+//	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用
+//	sign1 := client.Sign(param1)
+//	fmt.Println("sign1: ---->>>> ", sign1, "eebed2530dd51975541b66078b837a5a")
+//	param2 := map[string]string{"attach": "MTc3MTg0Njc5ODY=", "nonce_str": "4486119724", "open_order_id": "20231990230", "order_title": "VIP会员_plan1", "status": "OD", "time": "1684724194", "total_fee": "5.00", "trade_order_id": "20230522105324_7a650d7d-16c2-49a4-88de-94ce3f0319bb", "transaction_id": "2023052222001438701409098352"}
+//	sign2 := client.Sign(param2)
+//	fmt.Println("sign2: ---->>>> ", sign2, "f7b9ab7c2b9fdb2d24a9823add872b26")
+//
+//}
