@@ -10,6 +10,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -45,7 +46,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 		return
 	}
 	appId := "201906157182"                               //Appid
-	appSecret := "35e08fa719b288dc8754af05f1700f78"       //密钥
+	appSecret := os.Getenv("XUNHU_KEY")                   //密钥
 	var host = "https://api.xunhupay.com/payment/do.html" //跳转支付页接口URL
 	client := xunhupay.NewHuPi(&appId, &appSecret)        //初始化调用
 
@@ -144,9 +145,9 @@ func (c *PaymentController) Notify(ctx *gin.Context) {
 	params["nonce_str"] = ctx.DefaultPostForm("nonce_str", "")
 
 	sign := ctx.DefaultPostForm("hash", "")
-	appId := "201906157182"                         //Appid
-	appSecret := "35e08fa719b288dc8754af05f1700f78" //密钥
-	client := xunhupay.NewHuPi(&appId, &appSecret)  //初始化调用
+	appId := "201906157182"                        //Appid
+	appSecret := os.Getenv("XUNHU_KEY")            //密钥
+	client := xunhupay.NewHuPi(&appId, &appSecret) //初始化调用
 
 	pjs, _ := json.Marshal(params)
 	question := fmt.Sprintf("paynotify_%s.json", util.GetCurrentTime().Format("20060102150405"))
