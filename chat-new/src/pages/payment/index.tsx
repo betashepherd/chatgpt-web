@@ -76,18 +76,18 @@ const Payment = () => {
           <div className={css.m_top}>手机号：
             <input
                 className="input-item"
-                type="text"
+                type="number"
                 name="username"
                 id="username"
                 value={paymentForm.username}
                 onChange={(e:any) => handleInputChange( e)}
-                placeholder="请输入账号"
+                placeholder="请输入手机号"
             />
           </div>
           <div className={css.m_top}>套餐：
-              <input type="radio" value="plan30" name="plan30" id="plan30" checked={paymentForm.plan === 'plan30'} onChange={(e:any) => handleInputChange( e)} /> 30天（推荐 RMB 30.00）
-              <input type="radio" value="plan90" name="plan90" id="plan90" checked={paymentForm.plan === 'plan90'} onChange={(e:any) => handleInputChange( e)} /> 90天（RMB 90.00）
-              <input type="radio" value="plan1" name="plan1" id="plan1" checked={paymentForm.plan === 'plan1'} onChange={(e:any) => handleInputChange( e)} /> 1天（体验 RMB 5.00）
+              <input type="radio" value="plan30" name="plan30" id="plan30" checked={paymentForm.plan === 'plan30'} onChange={(e:any) => handleInputChange( e)} /> 30天（推荐 ¥30.00）
+              <input type="radio" value="plan90" name="plan90" id="plan90" checked={paymentForm.plan === 'plan90'} onChange={(e:any) => handleInputChange( e)} /> 90天（¥90.00）
+              <input type="radio" value="plan1" name="plan1" id="plan1" checked={paymentForm.plan === 'plan1'} onChange={(e:any) => handleInputChange( e)} /> 1天（体验 ¥5.00）
           </div>
           <div className={css.m_top}>
             <Button color="primary" size={"md"} onClick={() => submitPayment()}>

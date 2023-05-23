@@ -16,7 +16,6 @@ func RegisterWebRoutes(router *gin.Engine) {
 	router.Use(middlewares.Recovery)
 	router.Use(middlewares.Cors)
 	router.GET("", chatController.Index)
-	//router.GET("/payment/debug", paymentController.Debug)
 	router.POST("/payment/pay", paymentController.Pay)
 	router.POST("/payment/notify", paymentController.Notify)
 	router.POST("/user/auth", authController.Auth)
