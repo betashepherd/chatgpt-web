@@ -27,6 +27,9 @@ const Payment = () => {
     if (paymentForm.username == "" && paymentForm.plan == "") {
       return toast.show("请检查账号和套餐", undefined);
     }
+    if (paymentForm.username.trim().length != 11) {
+      return toast.show("请检查手机号", undefined);
+    }
 
     const res = await pay(paymentForm);
     if (res.data.code === 200) {
@@ -48,6 +51,9 @@ const Payment = () => {
       sn = 'plan';
     } else {
       sn = name;
+    }
+    if (name == 'username' && value.trim().length > 11) {
+        return toast.fail("请输入正确手机号");
     }
     setPaymentForm({ ...paymentForm, [sn]: value });
   };
