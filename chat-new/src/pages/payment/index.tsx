@@ -30,7 +30,6 @@ const Payment = () => {
     if (paymentForm.username.trim().length != 11) {
       return toast.show("请检查手机号", undefined);
     }
-
     const res = await pay(paymentForm);
     if (res.data.code === 200) {
       console.log(res.data.data);
@@ -41,6 +40,8 @@ const Payment = () => {
       tip += '支付宝扫下方二维码，开启AI之旅 :)'+ "\n";
       setPaytip(tip);
       setPayimage(res.data.data.url_qrcode);
+    } else {
+      return toast.show(res.data.errorMsg, undefined);
     }
   };
 

@@ -40,10 +40,14 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
+	if ok := util.VerifyMobileFormat(req.Username); !ok {
+		c.ResponseJson(ctx, http.StatusInternalServerError, "请检查手机号", nil)
+		return
+	}
 	plans := map[string]string{"plan1": "5.00", "plan30": "30.00", "plan90": "90.00"}
 
 	if _, ok := plans[req.Plan]; !ok {
-		c.ResponseJson(ctx, http.StatusOK, "请选择套餐", nil)
+		c.ResponseJson(ctx, http.StatusInternalServerError, "请选择套餐", nil)
 		return
 	}
 	appId := "201906157182"                               //Appid
@@ -66,7 +70,7 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	if err != nil {
 		question := fmt.Sprintf("payerr_%s.json", util.GetCurrentTime().Format("20060102150405"))
 		lfs.DataFs.SaveDataFile(question, []byte(err.Error()), "pay")
-		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
+		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
@@ -85,12 +89,12 @@ func (c *PaymentController) Pay(ctx *gin.Context) {
 	if err != nil {
 		question := fmt.Sprintf("payerr_%s.json", util.GetCurrentTime().Format("20060102150405"))
 		lfs.DataFs.SaveDataFile(question, []byte(err.Error()), "pay")
-		c.ResponseJson(ctx, http.StatusOK, err.Error(), nil)
+		c.ResponseJson(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
 	if pr.ErrCode != 0 {
-		c.ResponseJson(ctx, http.StatusOK, "pay api error, "+pr.ErrMsg, nil)
+		c.ResponseJson(ctx, http.StatusInternalServerError, "pay api error, "+pr.ErrMsg, nil)
 		return
 	}
 
